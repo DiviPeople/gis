@@ -1,0 +1,31 @@
+name: Linter Runner
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint:
+    name: Run linter
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+          pip install pylint
+
+      - name: Run pylint
+        run: |
+          # By default max-line-length is 100, but specify it explicitly.
+          find -name "*.py" -not -path "./.git/*" -not -path "docker/*" -not -path "*/src/*" | xargs pylint --max-line-length=100 --disable=too-few-public-methods,abstract-method
